@@ -11,7 +11,18 @@ app.use(notFoundHandler);
 app.use(errorHandlerMiddleware);
 
 const server = app.listen(config.PORT, () => {
-  logger.info({ port: config.PORT, env: config.NODE_ENV }, `🚀 TeleWyz E-Care Backend running on port ${config.PORT}`);
+  console.log(`
+=============================================================
+  TeleWyz E-Care Backend Server is Running!
+=============================================================
+  Local URL:        http://localhost:${config.PORT}
+  Health Check:     http://localhost:${config.PORT}/api/v1/health
+  Swagger API Docs: http://localhost:${config.PORT}/api-docs
+  Environment:      ${config.NODE_ENV}
+=============================================================
+  Server listening for incoming API requests... (Press Ctrl+C to stop)
+  `);
+  logger.info({ port: config.PORT, env: config.NODE_ENV }, `TeleWyz E-Care Backend listening on port ${config.PORT}`);
 });
 
 async function gracefulShutdown(signal: string) {
