@@ -1,0 +1,28 @@
+$kind: http-request
+name: send-otp
+method: POST
+url: '{{base_url}}/api/v1/auth/otp/send'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "msisdn": "2348012345678",
+      "purpose": "LOGIN"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Response time is acceptable", function () {
+        pm.expect(pm.response.responseTime).to.be.below(3000);
+      });
+      pm.test("OTP send returns success or validation error", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 429]);
+      });
+      pm.test("Response is valid JSON", function () {
+        pm.response.to.be.json;
+      });

@@ -1,0 +1,37 @@
+$kind: http-request
+name: create-sim-order
+method: POST
+url: '{{base_url}}/api/v1/sim/order'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "msisdn": "2348012345678",
+      "simType": "ESIM",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john@example.com"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Response time is acceptable", function () {
+        pm.expect(pm.response.responseTime).to.be.below(3000);
+      });
+      pm.test("SIM order returns valid response", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201, 400]);
+      });
+      if (pm.response.code === 201 || pm.response.code === 200) {
+        const json = pm.response.json();
+        if (json.data && json.data.orderId) {
+          pm.environment.set("sim_order_id", json.data.orderId);
+        }
+        if (json.data && json.data.orderNumber) {
+          pm.environment.set("sim_order_number", json.data.orderNumber);
+        }
+      }

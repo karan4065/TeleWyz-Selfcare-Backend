@@ -1,0 +1,33 @@
+$kind: http-request
+name: submit-mnp-request
+method: POST
+url: '{{base_url}}/api/v1/mnp/request'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "msisdn": "2348012345678",
+      "currentProvider": "MTN",
+      "firstName": "John",
+      "lastName": "Doe"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Response time is acceptable", function () {
+        pm.expect(pm.response.responseTime).to.be.below(3000);
+      });
+      pm.test("MNP request returns valid response", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201, 400]);
+      });
+      if (pm.response.code === 201 || pm.response.code === 200) {
+        const json = pm.response.json();
+        if (json.data && json.data.requestId) {
+          pm.environment.set("mnp_request_id", json.data.requestId);
+        }
+      }

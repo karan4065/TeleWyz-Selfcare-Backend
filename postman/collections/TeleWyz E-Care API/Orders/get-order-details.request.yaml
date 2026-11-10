@@ -1,0 +1,22 @@
+$kind: http-request
+name: get-order-details
+method: GET
+url: '{{base_url}}/api/v1/orders/:orderId'
+order: 3000
+pathVariables:
+  - key: orderId
+    value: '{{order_id}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Response time is acceptable", function () {
+        pm.expect(pm.response.responseTime).to.be.below(3000);
+      });
+      pm.test("Response has success structure", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property('success');
+      });
+      pm.test("Status code is 2xx", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });

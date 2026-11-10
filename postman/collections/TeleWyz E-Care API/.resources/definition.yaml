@@ -1,0 +1,6 @@
+$kind: collection
+name: 'TeleWyz E-Care API'
+description: 'Complete API test suite for TeleWyz E-Care Telecom Self-Care Platform'
+variables:
+  - key: base_url
+    value: 'http://localhost:3000'
